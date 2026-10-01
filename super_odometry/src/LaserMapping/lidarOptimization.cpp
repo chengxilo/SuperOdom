@@ -102,7 +102,11 @@ bool PoseSE3Parameterization::Plus(const double *x, const double *delta, double 
 }
 
 
+#if CERES_VERSION_MAJOR > 2 || (CERES_VERSION_MAJOR == 2 && CERES_VERSION_MINOR >= 1)
+bool PoseSE3Parameterization::PlusJacobian(const double *x, double *jacobian) const
+#else
 bool PoseSE3Parameterization::ComputeJacobian(const double *x, double *jacobian) const
+#endif
 {
     Eigen::Map<Eigen::Matrix<double, 7, 6, Eigen::RowMajor>> j(jacobian);
     (j.topRows(6)).setIdentity();

@@ -59,7 +59,8 @@ namespace super_odometry {
             ProjectName+"/imuodom_path", 1);
         
         // set relevant parameter
-        std::shared_ptr<gtsam::PreintegrationParams> p = gtsam::PreintegrationParams::MakeSharedU(config_.imuGravity);
+        // boost::shared_ptr before GTSAM 4.3, std::shared_ptr after.
+        auto p = gtsam::PreintegrationParams::MakeSharedU(config_.imuGravity);
         
         p->accelerometerCovariance =
                 gtsam::Matrix33::Identity(3, 3) * pow(config_.imuAccNoise, 2); // acc white noise in continuous
@@ -549,7 +550,6 @@ namespace super_odometry {
     
     // 1. Pre-process IMU data
     sensor_msgs::msg::Imu thisImu = imuConverter(*imu_raw);
-    assert(imu_raw->linear_acceleration.x != thisImu.linear_acceleration.x);
 
     // 2. Handle IMU initialization for LIVOX sensor
     if (!handleIMUInitialization(imu_raw, thisImu)) {

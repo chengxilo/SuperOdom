@@ -40,6 +40,21 @@ class SurfNormAnalyticCostFunction : public ceres::SizedCostFunction<1, 7> {
 		double negative_OA_dot_norm;
 };
 
+#if CERES_VERSION_MAJOR > 2 || (CERES_VERSION_MAJOR == 2 && CERES_VERSION_MINOR >= 1)
+class PoseSE3Parameterization : public ceres::Manifold {
+public:
+
+    PoseSE3Parameterization() {}
+    virtual ~PoseSE3Parameterization() {}
+    bool Plus(const double* x, const double* delta, double* x_plus_delta) const override;
+    bool PlusJacobian(const double* x, double* jacobian) const override;
+    // Not used by the solver paths here; no closed-form SE3 log is provided.
+    bool Minus(const double*, const double*, double*) const override { return false; }
+    bool MinusJacobian(const double*, double*) const override { return false; }
+    int AmbientSize() const override { return 7; }
+    int TangentSize() const override { return 6; }
+};
+#else
 class PoseSE3Parameterization : public ceres::LocalParameterization {
 public:
 	
@@ -50,6 +65,7 @@ public:
     virtual int GlobalSize() const { return 7; }
     virtual int LocalSize() const { return 6; }
 };
+#endif
 
 
 
