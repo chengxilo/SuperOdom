@@ -143,6 +143,8 @@ namespace super_odometry {
         rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pubImuOdometry;
         rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr pubHealthStatus;
         rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr pubImuPath;
+        // Created once: a broadcaster per call re-announces a DDS publisher at IMU rate.
+        std::unique_ptr<tf2_ros::TransformBroadcaster> tfBroadcaster;
 
 
         rclcpp::CallbackGroup::SharedPtr cb_group_;

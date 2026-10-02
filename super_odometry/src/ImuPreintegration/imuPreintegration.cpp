@@ -666,8 +666,8 @@ void imuPreintegration::publishTransformsAndPath(nav_msgs::msg::Odometry &odomet
 }
 
 void imuPreintegration::publishTransform(nav_msgs::msg::Odometry &odometry, const sensor_msgs::msg::Imu& thisImu){
-    
-    tf2_ros::TransformBroadcaster br(this);
+    if (!tfBroadcaster)
+        tfBroadcaster = std::make_unique<tf2_ros::TransformBroadcaster>(this);
     geometry_msgs::msg::TransformStamped transform_stamped_;
     tf2::Transform transform;
     transform_stamped_.header.stamp  = thisImu.header.stamp;
@@ -685,7 +685,7 @@ void imuPreintegration::publishTransform(nav_msgs::msg::Odometry &odometry, cons
     transform.setRotation(q);
     transform_stamped_.transform = tf2::toMsg(transform);
     if(frame_count%4==0)
-        br.sendTransform(transform_stamped_);
+        tfBroadcaster->sendTransform(transform_stamped_);
 }
 
 void imuPreintegration::updateAndPublishPath(nav_msgs::msg::Odometry &odometry, const sensor_msgs::msg::Imu& thisImu){
